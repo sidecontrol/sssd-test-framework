@@ -85,6 +85,16 @@ class KnownTopology(KnownTopologyBase):
     .. topology-mark:: KnownTopology.AD
     """
 
+    ADChildAD = SSSDTopologyMark(
+        name="adchildad",
+        topology=Topology(TopologyDomain("sssd", client=1, ad=2, nfs=1)),
+        controller=ADTopologyController(),
+        domains=dict(test="sssd.ad[0]", child="sssd.ad[1]"),
+        fixtures=dict(
+            client="sssd.client[0]", ad="sssd.ad[0]", child="sssd.ad[1]", provider="sssd.ad[0]", nfs="sssd.nfs[0]"
+        ),
+    )
+
     Samba = SSSDTopologyMark(
         name="samba",
         topology=Topology(TopologyDomain("sssd", client=1, samba=1, nfs=1)),
