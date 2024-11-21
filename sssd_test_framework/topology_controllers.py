@@ -163,9 +163,13 @@ class IPATrustADTopologyController(ProvisionedBackupTopologyController):
     # fully ready to create the trust. It takes a while for it to start working.
     @retry_command(max_retries=20, delay=5, match_stderr='CIFS server communication error: code "3221225581"')
     def trust_add(self, ipa: IPAHost, trusted: ADHost | SambaHost) -> ProcessResult:
-        return ipa.conn.exec(
+
+        result = ipa.conn.exec(
             ["ipa", "trust-add", trusted.domain, "--admin", "Administrator", "--password"], input=trusted.adminpw
         )
+        if result.rc != 0:
+            self.logger.error(ipa.fs.read("/var/log/httpd/error_log"))
+        return result
 
 
 class IPATrustSambaTopologyController(IPATrustADTopologyController):
